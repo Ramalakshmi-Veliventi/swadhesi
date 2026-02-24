@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Swadheshi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #e8f5e9, #ffffff);
+        }
+
+        header {
+            background: linear-gradient(to right, #1b5e20, #43a047);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav button {
+            background: white;
+            color: #2e7d32;
+            border: none;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        nav button:hover {
+            background: #c8e6c9;
+            transform: scale(1.05);
+        }
+
+        .section {
+            display: none;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h2 {
+            color: #1b5e20;
+            margin-bottom: 15px;
+        }
+
+        .lang-btn {
+            background: #43a047;
+            color: white;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 20px;
+            margin: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: #1b5e20;
+            transform: scale(1.1);
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 250px;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .flex {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        input {
+            padding: 10px;
+            margin: 8px;
+            width: 250px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button.action {
+            background: #2e7d32;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button.action:hover {
+            background: #1b5e20;
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #1b5e20;
+            color: white;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    🌾 Swadheshi
+    <nav>
+        <button onclick="showSection('home')">Home</button>
+        <button onclick="showSection('farmer')">Farmer</button>
+        <button onclick="showSection('buyer')">Buyer</button>
+        <button onclick="showSection('admin')">Admin</button>
+    </nav>
+</header>
+
+<!-- HOME -->
+<div id="home" class="section active">
+    <h2 id="homeTitle">Empowering Farmers with Technology</h2>
+    <p id="homeDesc">Transform crops into value-added products and connect globally.</p>
+
+    <h3 id="langHeading" style="color:#1b5e20;">🌍 Languages Available</h3>
+
+    <div>
+        <button class="lang-btn" onclick="changeLanguage('en')">English</button>
+        <button class="lang-btn" onclick="changeLanguage('hi')">हिंदी</button>
+        <button class="lang-btn" onclick="changeLanguage('te')">తెలుగు</button>
+        <button class="lang-btn" onclick="changeLanguage('ta')">தமிழ்</button>
+        <button class="lang-btn" onclick="changeLanguage('kn')">ಕನ್ನಡ</button>
+    </div>
+</div>
+
+<!-- FARMER -->
+<div id="farmer" class="section">
+    <h2 id="farmerTitle">👨‍🌾 Farmer Dashboard</h2>
+
+    <input type="text" id="productName" placeholder="Product Name">
+    <input type="number" id="productPrice" placeholder="Price">
+    <input type="number" id="productStock" placeholder="Stock Quantity">
+    <br>
+    <button class="action" id="addProductBtn" onclick="addProduct()">Add Product</button>
+
+    <div id="farmerProducts" class="flex"></div>
+</div>
+
+<!-- BUYER -->
+<div id="buyer" class="section">
+    <h2 id="buyerTitle">🛒 Buyer Marketplace</h2>
+    <div id="buyerProducts" class="flex"></div>
+
+    <h3 id="cartTitle" style="margin-top:20px;">Cart</h3>
+    <div id="cartItems"></div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="section">
+    <h2 id="adminTitle">👨‍💼 Admin Panel</h2>
+    <p>Total Products: <span id="totalProducts">0</span></p>
+    <p>Total Orders: <span id="totalOrders">0</span></p>
+</div>
+
+<footer>
+    © 2026 Swadheshi | Supporting Rural Entrepreneurs
+</footer>
+
+<script>
+let products = [];
+let cart = [];
+let orders = 0;
+let currentLang = "en";
+
+const translations = {
+en: {
+homeTitle:"Empowering Farmers with Technology",
+homeDesc:"Transform crops into value-added products and connect globally.",
+langHeading:"🌍 Languages Available",
+farmer:"👨‍🌾 Farmer Dashboard",
+buyer:"🛒 Buyer Marketplace",
+admin:"👨‍💼 Admin Panel",
+addProduct:"Add Product",
+cart:"Cart",
+addToCart:"Add to Cart",
+placeOrder:"Place Order",
+orderSuccess:"Order Placed Successfully!",
+fillFields:"Please fill all fields!"
+},
+hi: {
+homeTitle:"प्रौद्योगिकी के माध्यम से किसानों को सशक्त बनाना",
+homeDesc:"फसलों को मूल्यवर्धित उत्पादों में बदलें और वैश्विक स्तर पर जुड़ें।",
+langHeading:"🌍 उपलब्ध भाषाएँ",
+farmer:"👨‍🌾 किसान डैशबोर्ड",
+buyer:"🛒 खरीदार बाजार",
+admin:"👨‍💼 व्यवस्थापक पैनल",
+addProduct:"उत्पाद जोड़ें",
+cart:"कार्ट",
+addToCart:"कार्ट में जोड़ें",
+placeOrder:"ऑर्डर करें",
+orderSuccess:"ऑर्डर सफलतापूर्वक किया गया!",
+fillFields:"कृपया सभी फ़ील्ड भरें!"
+},
+te: {
+homeTitle:"సాంకేతికత ద్వారా రైతులను శక్తివంతం చేయడం",
+homeDesc:"పంటలను విలువ ఆధారిత ఉత్పత్తులుగా మార్చి ప్రపంచవ్యాప్తంగా కలుపుతుంది.",
+langHeading:"🌍 అందుబాటులో ఉన్న భాషలు",
+farmer:"👨‍🌾 రైతు డాష్‌బోర్డ్",
+buyer:"🛒 కొనుగోలుదారుల మార్కెట్",
+admin:"👨‍💼 నిర్వాహక ప్యానెల్",
+addProduct:"ఉత్పత్తి జోడించండి",
+cart:"కార్ట్",
+addToCart:"కార్ట్‌లో జోడించండి",
+placeOrder:"ఆర్డర్ చేయండి",
+orderSuccess:"ఆర్డర్ విజయవంతంగా పూర్తైంది!",
+fillFields:"దయచేసి అన్ని వివరాలు పూరించండి!"
+},
+ta: {
+homeTitle:"தொழில்நுட்பத்தின் மூலம் விவசாயிகளை வலுப்படுத்துதல்",
+homeDesc:"பயிர்களை மதிப்பு கூடிய தயாரிப்புகளாக மாற்றி உலகளவில் இணைக்கவும்.",
+langHeading:"🌍 கிடைக்கும் மொழிகள்",
+farmer:"👨‍🌾 விவசாயி டாஷ்போர்டு",
+buyer:"🛒 வாங்குபவர் சந்தை",
+admin:"👨‍💼 நிர்வாக குழு",
+addProduct:"தயாரிப்பு சேர்க்க",
+cart:"வண்டி",
+addToCart:"வண்டியில் சேர்",
+placeOrder:"ஆர்டர் செய்ய",
+orderSuccess:"ஆர்டர் வெற்றிகரமாக செய்யப்பட்டது!",
+fillFields:"அனைத்து விவரங்களையும் நிரப்பவும்!"
+},
+kn: {
+homeTitle:"ತಂತ್ರಜ್ಞಾನದಿಂದ ರೈತರನ್ನು ಸಬಲಗೊಳಿಸುವುದು",
+homeDesc:"ಬೆಳೆಗಳನ್ನು ಮೌಲ್ಯವರ್ಧಿತ ಉತ್ಪನ್ನಗಳಾಗಿ ರೂಪಿಸಿ ಜಾಗತಿಕವಾಗಿ ಸಂಪರ್ಕಿಸಿ.",
+langHeading:"🌍 ಲಭ್ಯವಿರುವ ಭಾಷೆಗಳು",
+farmer:"👨‍🌾 ರೈತ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+buyer:"🛒 ಖರೀದಿದಾರರ ಮಾರುಕಟ್ಟೆ",
+admin:"👨‍💼 ಆಡಳಿತ ಪ್ಯಾನಲ್",
+addProduct:"ಉತ್ಪನ್ನ ಸೇರಿಸಿ",
+cart:"ಕಾರ್ಟ್",
+addToCart:"ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ",
+placeOrder:"ಆರ್ಡರ್ ಮಾಡಿ",
+orderSuccess:"ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿ ಮಾಡಲಾಗಿದೆ!",
+fillFields:"ದಯವಿಟ್ಟು ಎಲ್ಲಾ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ!"
+}
+};
+
+function changeLanguage(lang){
+currentLang=lang;
+updateText();
+displayProducts();
+displayCart();
+}
+
+function updateText(){
+document.getElementById("homeTitle").innerText=translations[currentLang].homeTitle;
+document.getElementById("homeDesc").innerText=translations[currentLang].homeDesc;
+document.getElementById("langHeading").innerText=translations[currentLang].langHeading;
+document.getElementById("farmerTitle").innerText=translations[currentLang].farmer;
+document.getElementById("buyerTitle").innerText=translations[currentLang].buyer;
+document.getElementById("adminTitle").innerText=translations[currentLang].admin;
+document.getElementById("addProductBtn").innerText=translations[currentLang].addProduct;
+document.getElementById("cartTitle").innerText=translations[currentLang].cart;
+}
+
+function showSection(id){
+document.querySelectorAll('.section').forEach(sec=>sec.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+displayProducts();
+}
+
+function addProduct(){
+let name=document.getElementById("productName").value;
+let price=document.getElementById("productPrice").value;
+let stock=document.getElementById("productStock").value;
+
+if(name&&price&&stock){
+products.push({name,price,stock});
+displayProducts();
+document.getElementById("productName").value="";
+document.getElementById("productPrice").value="";
+document.getElementById("productStock").value="";
+}else{
+alert(translations[currentLang].fillFields);
+}
+}
+
+function displayProducts(){
+let farmerDiv=document.getElementById("farmerProducts");
+let buyerDiv=document.getElementById("buyerProducts");
+
+farmerDiv.innerHTML="";
+buyerDiv.innerHTML="";
+
+products.forEach((p,index)=>{
+farmerDiv.innerHTML+=`<div class="card">
+<h4>${p.name}</h4>
+<p>₹${p.price}</p>
+<p>Stock: ${p.stock}</p>
+</div>`;
+
+buyerDiv.innerHTML+=`<div class="card">
+<h4>${p.name}</h4>
+<p>₹${p.price}</p>
+<button class="action" onclick="addToCart(${index})">
+${translations[currentLang].addToCart}
+</button>
+</div>`;
+});
+
+document.getElementById("totalProducts").innerText=products.length;
+}
+
+function addToCart(index){
+cart.push(products[index]);
+displayCart();
+}
+
+function displayCart(){
+let cartDiv=document.getElementById("cartItems");
+cartDiv.innerHTML="";
+
+cart.forEach(item=>{
+cartDiv.innerHTML+=`<p>${item.name} - ₹${item.price}</p>`;
+});
+
+if(cart.length>0){
+cartDiv.innerHTML+=`<br>
+<button class="action" onclick="placeOrder()">
+${translations[currentLang].placeOrder}
+</button>`;
+}
+}
+
+function placeOrder(){
+orders++;
+cart=[];
+displayCart();
+document.getElementById("totalOrders").innerText=orders;
+alert(translations[currentLang].orderSuccess);
+}
+</script>
+
+</body>
+</html>        
